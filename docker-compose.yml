@@ -1,0 +1,65 @@
+services:
+  web1:
+    build: ./web1
+    container_name: web1
+    restart: unless-stopped
+    networks: [lb_net]
+
+  web2:
+    build: ./web2
+    container_name: web2
+    restart: unless-stopped
+    networks: [lb_net]
+
+  web3:
+    build: ./web3
+    container_name: web3
+    restart: unless-stopped
+    networks: [lb_net]
+
+  haproxy:
+    image: haproxy:2.8-alpine
+    container_name: haproxy
+    restart: unless-stopped
+    depends_on: [web1, web2, web3]
+    ports:
+      - "80:80"
+      - "8405:8404"
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks: [lb_net]
+
+  haproxy-backup:
+    image: haproxy:2.8-alpine
+    container_name: haproxy-backup
+    restart: unless-stopped
+    depends_on: [web1, web2, web3]
+    ports:
+      - "8082:80"
+      - "8406:8404"
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks: [lb_net]
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9091:9090"
+    networks: [lb_net]
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    depends_on: [prometheus]
+    ports:
+      - "3000:3000"
+    networks: [lb_net]
+
+networks:
+  lb_net:
+    driver: bridge
