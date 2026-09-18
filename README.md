@@ -74,7 +74,7 @@ Tous les conteneurs communiquent sur un réseau Docker privé : `lb_net`.
 ## 🚀 Démarrage
 
 ```bash
-git clone https://github.com/<votre-nom-utilisateur>/haproxy-docker-haute-disponibilite.git
+git clone https://github.com/sabir489/haproxy-docker-haute-disponibilite.git
 cd haproxy-docker-haute-disponibilite
 chmod +x start.sh watchdog.sh
 ./start.sh
